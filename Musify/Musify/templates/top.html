@@ -1,0 +1,84 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Top Music</title>
+    <style>
+        .track-card {
+            border: 1px solid #ddd;
+            padding: 16px;
+            margin: 16px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+        .track-card img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        .track-actions {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 8px;
+        }
+        .track-actions button {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+        .like {
+            background-color: #ff6666;
+            color: white;
+        }
+        .add {
+            background-color: #4CAF50;
+            color: white;
+        }
+        .listen {
+            background-color: #008CBA;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <h1>Top Music</h1>
+    <div class="track-list">
+        <center>
+        {% for track in tracks %}
+            <div class="track-card">
+                <img src="{{ track.cover }}" alt="Cover of {{ track.title }}">
+                <h2>{{ track.position }}. {{ track.title }}</h2> <!-- Display position -->
+                <p>Album: {{ track.album }}</p>
+                <p>Artist: {{ track.artist }}</p>
+                <audio controls>
+                    <source src="{{ track.preview }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+                <div class="track-actions">
+                    <form method="post" action="{% url 'like_track' track.id %}">
+                        {% csrf_token %}
+                        <button class="like" type="submit">❤️ Like</button>
+                    </form>
+                    <form method="post" action="{% url 'add_to_playlist' track.id %}">
+                        {% csrf_token %}
+                        <button class="add" type="submit">➕ Add</button>
+                    </form>
+                    <form method="post" action="{% url 'add_to_historical' track.id %}">
+                        {% csrf_token %}
+                        <button class="listen" type="submit">🎧 Listen</button>
+                    </form>
+                </div>
+            </div>
+        {% endfor %}
+        </center>
+    </div>
+</body>
+</html>
+{% endblock content %}

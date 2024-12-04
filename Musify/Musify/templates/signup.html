@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Inscription</title>
+</head>
+<body>
+    <h1>Create Account</h1>
+
+    <!-- Affichage des messages de succès ou d'erreur -->
+    {% if messages %}
+        <ul>
+            {% for message in messages %}
+                <li>{{ message }}</li>
+            {% endfor %}
+        </ul>
+    {% endif %}
+
+    <form method="POST">
+        {% csrf_token %}
+        
+        <!-- Champ prénom avec valeur pré-remplie en cas d'erreur -->
+        <label for="first_name">First Name :</label><br/>
+        <input type="text" id="first_name" name="first_name" value="{{ form.first_name.value }}" required><br><br/>
+
+        <!-- Champ nom avec valeur pré-remplie en cas d'erreur -->
+        <label for="last_name">Last Name :</label><br/>
+        <input type="text" id="last_name" name="last_name" value="{{ form.last_name.value }}" required><br><br/>
+
+        <!-- Champ email avec valeur pré-remplie en cas d'erreur -->
+        <label for="email">Email :</label><br/>
+        <input type="email" id="email" name="email" value="{{ form.email.value }}" required><br><br/>
+
+        <!-- Champ mot de passe -->
+        <label for="password">Password :</label><br/>
+        <input type="password" id="password" name="password" required><br><br/>
+
+        <button type="submit">Sign Up</button>
+    </form>
+
+    <p>You already have an account? <a href="{% url 'login' %}">Sign In</a></p>
+</body>
+</html>
