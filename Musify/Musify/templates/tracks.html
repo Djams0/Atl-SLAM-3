@@ -109,7 +109,7 @@
                         {% csrf_token %}
                         <button class="like" type="submit">❤️ Like</button>
                     </form>
-                    <button class="add">➕ Add</button>
+                    <button class="add" data-track-id="{{ track.id }}">➕ Add</button>
                     <form method="post" action="{% url 'add_to_historical' track.id %}">
                         {% csrf_token %}
                         <button class="listen" type="submit">🎧 Listen</button>
@@ -119,16 +119,14 @@
         {% endfor %}
     </div>
 
-    <!-- Overlay background -->
     <div id="overlay"></div>
 
-    <!-- Playlist selection pop-up -->
     <div id="playlist-popup">
         <div class="popup-content">
-            <form method="post" action="{% url 'add_to_playlist' track.id %}">
+            <form method="post" action="">
                 {% csrf_token %}
                 <label for="playlist-select">Choose a playlist:</label>
-                <select name="playlist" id="playlist-select">
+                <select name="playlist_id" id="playlist-select">
                     {% for playlist in playlists %}
                         <option value="{{ playlist.playlist.id }}">{{ playlist.playlist.name }}</option>
                     {% endfor %}
@@ -139,22 +137,25 @@
             </form>
         </div>
     </div>
-
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const addButtons = document.querySelectorAll('.track-actions .add');
             const popup = document.getElementById('playlist-popup');
             const overlay = document.getElementById('overlay');
-
+            const form = popup.querySelector('form');
+        
             // Show the pop-up when the "Add" button is clicked
             addButtons.forEach(button => {
                 button.addEventListener('click', (event) => {
                     event.preventDefault();
+                    const trackId = button.dataset.trackId;
+                    console.log("Track ID:", trackId); 
+                    form.action = `/tracks/add_to_playlist/${trackId}/`;  // Corrected line
                     popup.style.display = 'block';
                     overlay.style.display = 'block';
                 });
             });
-
+        
             // Hide the pop-up and overlay when the overlay is clicked
             overlay.addEventListener('click', () => {
                 popup.style.display = 'none';
@@ -165,5 +166,3 @@
 </body>
 </html>
 {% endblock content %}
-
-

@@ -33,9 +33,13 @@
         {% for track in favorites %}
             <div class="track-card">
                 <img src="{{ track.cover }}" alt="Cover of {{ track.title }}">
-                <h3>{{ track.title }}</h3>
-                <p>Artist: {{ track.artist }}</p>
+                <h2>{{ track.title }}</h2>
                 <p>Album: {{ track.album }}</p>
+                <p>Artist: {{ track.artist }}</p>
+                <audio controls>
+                    <source src="{{ track.preview }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
             </div>
         {% empty %}
             <p>Aucun favori trouvé.</p>
@@ -44,26 +48,30 @@
 
     <h2>Mes Playlists</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 16px;">
-        {% for track in playlists %}
+        {% for playlist in playlists %}
             <div class="track-card">
-                <img src="{{ track.cover }}" alt="Cover of {{ track.title }}">
-                <h3>{{ track.title }}</h3>
-                <p>Artist: {{ track.artist }}</p>
-                <p>Album: {{ track.album }}</p>
+                <h3>
+                    <a href="{% url 'playlist_detail' playlist.id %}">{{ playlist.name }}</a>
+                </h3>
             </div>
         {% empty %}
             <p>Aucune playlist trouvée.</p>
         {% endfor %}
     </div>
+       
 
     <h2>Mon Historique d'Écoute</h2>
     <div style="display: flex; flex-wrap: wrap; gap: 16px;">
         {% for track in history %}
             <div class="track-card">
                 <img src="{{ track.cover }}" alt="Cover of {{ track.title }}">
-                <h3>{{ track.title }}</h3>
-                <p>Artist: {{ track.artist }}</p>
+                <h2>{{ track.title }}</h2>
                 <p>Album: {{ track.album }}</p>
+                <p>Artist: {{ track.artist }}</p>
+                <audio controls>
+                    <source src="{{ track.preview }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
             </div>
         {% empty %}
             <p>Aucun historique d'écoute trouvé.</p>

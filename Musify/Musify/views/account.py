@@ -1,7 +1,7 @@
 import requests
 from django.shortcuts import render
 from django.contrib.auth.decorators import login_required
-from ..models import Favorite, PlaylistUser, historical
+from ..models import Favorite, playlist, historical
 
 @login_required
 def account_view(request):
@@ -22,26 +22,22 @@ def account_view(request):
             if response.status_code == 200:
                 track = response.json()
                 favorites_data.append({
-                    "title": track.get("title"),
-                    "artist": track.get("artist", {}).get("name"),
-                    "album": track.get("album", {}).get("title"),
-                    "cover": track.get("album", {}).get("cover_medium"),
+                "id": track.get("id"),
+                "title": track.get("title"),
+                "album": track.get("album", {}).get("title"),
+                "artist": track.get("artist", {}).get("name"),
+                "cover": track.get("album", {}).get("cover_medium"),
+                "preview": track.get("preview"),
                 })
 
-    # Récupérer les morceaux dans les playlists de l'utilisateur
+    # Récupérer les playlists de l'utilisateur (modifié pour afficher uniquement les noms)
     playlists_data = []
-    playlists = PlaylistUser.objects.filter(user=user)
-    for playlist in playlists:
-        url = f"https://api.deezer.com/track/{playlist.id_song_deezer}"
-        response = requests.get(url)
-        if response.status_code == 200:
-            track = response.json()
-            playlists_data.append({
-                "title": track.get("title"),
-                "artist": track.get("artist", {}).get("name"),
-                "album": track.get("album", {}).get("title"),
-                "cover": track.get("album", {}).get("cover_medium"),
-            })
+    playlists = playlist.objects.filter(user=user)
+    for playlist_item in playlists:
+        playlists_data.append({
+            "id": playlist_item.id,
+            "name": playlist_item.name,
+        })
 
     # Récupérer l'historique d'écoute de l'utilisateur
     history_data = []
@@ -52,10 +48,12 @@ def account_view(request):
         if response.status_code == 200:
             track = response.json()
             history_data.append({
+                "id": track.get("id"),
                 "title": track.get("title"),
-                "artist": track.get("artist", {}).get("name"),
                 "album": track.get("album", {}).get("title"),
+                "artist": track.get("artist", {}).get("name"),
                 "cover": track.get("album", {}).get("cover_medium"),
+                "preview": track.get("preview"),
             })
 
     # Rendre la page avec les données
@@ -66,3 +64,4 @@ def account_view(request):
         "playlists": playlists_data,
         "history": history_data
     })
+

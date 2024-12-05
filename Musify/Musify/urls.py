@@ -22,6 +22,7 @@ from .views.login import login_view
 from .views.logout import logout_view
 from .views.home import  home_view
 from .views.account import account_view
+from .views.playlist import playlist_detail
 from .views.tracks import tracks_view, like_track, add_to_playlist, add_to_historical
 from .views.top import top_view, like_track, add_to_playlist, add_to_historical
 from .views.search import  search_view
@@ -44,6 +45,8 @@ urlpatterns = [
     
     path('top/', top_view, name='top'),
     path('search/', search_view, name='search' ),
+    
     path('account/', account_view, name='account'),
+    path('playlist/<int:playlist_id>/', playlist_detail, name='playlist_detail'),
 ]
 

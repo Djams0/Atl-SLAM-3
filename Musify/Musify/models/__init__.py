@@ -1,5 +1,5 @@
 from .favorite import Favorite
 from .historycal import historical
-from .playlist import playlist
-from .playlist_user import PlaylistUser
+from .Playlist import playlist
+from .Playlist_user import PlaylistUser
 

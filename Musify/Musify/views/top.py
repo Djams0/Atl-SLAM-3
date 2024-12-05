@@ -1,11 +1,12 @@
 import requests
 from django.shortcuts import render, redirect
 from django.contrib.auth.decorators import login_required
-from ..models import Favorite, historical, PlaylistUser
+from ..models import Favorite, historical, playlist, PlaylistUser
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
-
+@login_required
 def top_view(request):
-    # URL de l'API Deezer pour obtenir le top 20 des morceaux
     url = "https://api.deezer.com/chart"
     response = requests.get(url)
     tracks_data = []
@@ -20,11 +21,12 @@ def top_view(request):
                 "artist": track.get("artist", {}).get("name"),
                 "cover": track.get("album", {}).get("cover_medium"),
                 "preview": track.get("preview"),
-                "position": track.get("position"),  # Ajout de la position du morceau
+                "position": track.get("position"),
                 "link": track.get("link")
             })
+    playlists = playlist.objects.filter(user=request.user)
+    return render(request, 'top.html', {"tracks": tracks_data, "playlists": playlists})
 
-    return render(request, 'top.html', {"tracks": tracks_data})
 
 
 @login_required
@@ -36,33 +38,46 @@ def like_track(request, track_id):
         type="track"
     )
     if not created:
-        favorite.delete()  # Unlike if it already exists
-
-    return redirect('top')
-
-
-@login_required(login_url='/login/')
-def add_to_playlist(request, track_id):
-    user = request.user
+        favorite.delete()
+        return JsonResponse({"message": "song unliked"})
     
-    playlist_user = user.playlistuser_set.first()
-    if not playlist_user:
-        playlist = playlist.objects.create(name=f"Playlist de {user.username}")
-        playlist_user = PlaylistUser.objects.create(
-            playlist=playlist,
-            user=user,
-            id_song_deezer=track_id
+    return JsonResponse({"message": "song liked"})
+
+
+
+@login_required
+def add_to_playlist(request, track_id):
+    user = request.user 
+    
+    new_playlist_name = request.POST.get('new_playlist_name')
+    playlist_id = request.POST.get('playlist_id')
+
+    if new_playlist_name:
+        
+        new_playlist = playlist.objects.create(
+            name=new_playlist_name,
+            user=user 
         )
     else:
-        playlist = playlist_user.playlist
+        if playlist_id:
+            new_playlist = get_object_or_404(playlist, id=playlist_id, user=user)
+        else:
+            return JsonResponse({"message": "No playlist selected or created"}, status=400)
+
+    existing_entry = PlaylistUser.objects.filter(
+        playlist=new_playlist,
+        id_song_deezer=track_id
+    ).first()
+
+    if existing_entry:
+        return JsonResponse({"message": "Track already in playlist"}, status=400)
     
     PlaylistUser.objects.create(
-        playlist=playlist,
-        user=user,
-        id_song_deezer=track_id
+        playlist=new_playlist, 
+        id_song_deezer=track_id 
     )
     
-    return redirect('top')
+    return JsonResponse({"message": "Track added to playlist"})
 
 
 
@@ -73,4 +88,4 @@ def add_to_historical(request, track_id):
         user=user,
         id_song_deezer=track_id
     )
-    return redirect('top')
+    return JsonResponse({"message": "song added to historical"})
