@@ -1,0 +1,103 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mon Compte</title>
+    <style>
+        .track-card, .artist-card {
+            border: 1px solid #ddd;
+            padding: 16px;
+            margin: 16px;
+            text-align: center;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            max-width: 300px;
+        }
+        .track-card img, .artist-card img {
+            max-width: 100%;
+            border-radius: 8px;
+        }
+        
+    </style>
+</head>
+<body style="background-color: #f8f9fa;">
+    <h1>Mon Compte</h1>
+    <p>Nom: {{ first_name }} {{ last_name }}</p>
+
+    <h2>Mes Favoris</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+        {% for track in favorites %}
+            <div class="track-card">
+                <img src="{{ track.cover }}" alt="Cover of {{ track.title }}">
+                <h2>{{ track.title }}</h2>
+                <p>Album: {{ track.album }}</p>
+                <p>Artist: {{ track.artist }}</p>
+                <audio controls>
+                    <source src="{{ track.preview }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        {% empty %}
+            <p>Aucun song favori trouvé.</p>
+        {% endfor %}
+    </div>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+        {% for artist in artists %}
+        <div class="artist-card">
+            {% if artist.id %}
+                <a href="{% url 'tracks' artist.id %}">
+            {% endif %}
+                    <img src="{{ artist.picture_xl|default:'default-image.jpg' }}" 
+                         alt="Image de {{ artist.name }}">
+                    <h2>{{ artist.name }}</h2>
+                    <p>Nombre d'albums : {{ artist.nb_album }}</p>
+                    <p>Fans : {{ artist.nb_fan}}</p>
+            {% if artist.id %}
+                </a>
+            {% endif %}
+        </div>
+        {% empty %}
+            <p>Aucun artist favori trouvé.</p>
+        {% endfor %}
+    </div>
+    
+
+    <h2>Mes Playlists</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+        {% for playlist in playlists %}
+            <div class="track-card">
+                <h3>
+                    <a href="{% url 'playlist_detail' playlist.id %}">{{ playlist.name }}</a>
+                </h3>
+            </div>
+        {% empty %}
+            <p>Aucune playlist trouvée.</p>
+        {% endfor %}
+    </div>
+       
+
+    <h2>Mon Historique d'Écoute</h2>
+    <div style="display: flex; flex-wrap: wrap; gap: 16px;">
+        {% for track in history %}
+            <div class="track-card">
+                <img src="{{ track.cover }}" alt="Cover of {{ track.title }}">
+                <h2>{{ track.title }}</h2>
+                <p>Album: {{ track.album }}</p>
+                <p>Artist: {{ track.artist }}</p>
+                <audio controls>
+                    <source src="{{ track.preview }}" type="audio/mpeg">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
+        {% empty %}
+            <p>Aucun historique d'écoute trouvé.</p>
+        {% endfor %}
+    </div>
+</body>
+</html>
+{% endblock content %}

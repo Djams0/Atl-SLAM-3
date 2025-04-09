@@ -1,0 +1,83 @@
+{% extends "header.html" %}
+{% load static %}
+
+{% block content %}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Recherche sur Deezer</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f5f5f5;
+        }
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+            gap: 15px;
+            padding: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        .track {
+            background-color: #ffffff;
+            border-radius: 8px;
+            padding: 15px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            text-align: center;
+        }
+        .track img {
+            width: 100%;
+            border-radius: 8px;
+            max-height: 300px;
+            object-fit: cover;
+        }
+        .track h3 {
+            font-size: 18px;
+            margin: 10px 0;
+            color: #333;
+        }
+        .track p {
+            font-size: 14px;
+            color: #666;
+            margin: 5px 0;
+        }
+
+        .audio-player {
+            margin-top: 10px;
+        }
+        .no-results {
+            text-align: center;
+            font-size: 18px;
+            color: #555;
+            margin-top: 50px;
+        }
+    </style>
+</head>
+<body>
+    {% if tracks %}
+        <div class="results">
+            {% for track in tracks %}
+                <div class="track">
+                    <img src="https://cdn-images.dzcdn.net/images/cover/{{ track.album.md5_image }}/250x250-000000-80-0-0.jpg" alt="Pochette de l'album">
+                    <h3>{{ track.title_short }}</h3>
+                    <p>Artiste : {{ track.artist.name }}</p>
+                    <p>Album : {{ track.album.title }}</p>
+                    <audio class="audio-player" controls>
+                        <source src="{{ track.preview }}" type="audio/mpeg">
+                        Votre navigateur ne prend pas en charge l'élément audio.
+                    </audio>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="no-results">Aucun résultat trouvé pour "{{ query }}". Essayez un autre terme de recherche.</p>
+    {% endif %}
+</body>
+</html>
+{% endblock content %}
